@@ -1,5 +1,5 @@
 # Todos
 
-- [ ] Read data 
-- [ ] perform preprocessing on the data
-- [ ] implement basic model
+- [x] Read data 
+- [x] perform preprocessing on the data
+- [x] implement basic model
