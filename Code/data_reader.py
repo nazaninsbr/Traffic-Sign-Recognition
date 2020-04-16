@@ -1,13 +1,17 @@
 import cv2
 import numpy as np
 import pandas as pd
-from constants import img_dim, data_folder_path
+from constants import img_dim, data_folder_path, number_of_classes
+from PIL import Image
+import keras
 
 def read_and_rescale_image(img_path):
     img = cv2.imread(img_path)
-    # print(img.shape)
+    # this_im = Image.fromarray(img, 'RGB')
+    # this_im.show()
     res = cv2.resize(img, dsize=(img_dim, img_dim), interpolation=cv2.INTER_CUBIC)
-    # print(res.shape)
+    # this_im = Image.fromarray(res, 'RGB')
+    # this_im.show()
     return res
 
 def read_image_files(csv_file_name):
@@ -20,6 +24,6 @@ def read_image_files(csv_file_name):
         
         labels.append(this_items_lable)
         data.append(this_img)
-    
     labels, data = np.array(labels), np.array(data)
-    return labels, data
+    labels = keras.utils.to_categorical(labels, num_classes=number_of_classes)
+    return data, labels
