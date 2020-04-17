@@ -11,3 +11,4 @@ def draw_multiple_line_plots(dict_of_vals, field_to_draw, title, y_label, x_labe
     plt.xlabel(x_label)
     plt.legend(legend_li, loc='upper left')
     plt.savefig(generated_files_path+file_save_name)
+    plt.cla()

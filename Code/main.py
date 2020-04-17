@@ -12,7 +12,7 @@ def create_and_test_basic_model(X_train, y_train, X_test, y_test):
     print('> Basic model')
     learning_rate = 0.01
     optimizer = 'SGD'
-    epochs = 10
+    epochs = 2
     batch_size = 32
     file_save_name = 'basic_model_lr_{}_optimizer_{}_epochs_{}_batch_{}'.format(learning_rate, optimizer, epochs, batch_size)
     this_model = Model(X_train, y_train, X_test, y_test, learning_rate=learning_rate, optimizer=optimizer, train_valid_split=0.2, activation_function='relu', epochs=epochs, batch_size=batch_size, loss_function='categorical_crossentropy', use_drop_out=False, file_save_name=file_save_name)
