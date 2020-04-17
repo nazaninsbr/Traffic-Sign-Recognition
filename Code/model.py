@@ -4,13 +4,13 @@ from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D
 from keras import optimizers
 from keras import backend as K
-from constants import number_of_classes, img_dim
+from constants import number_of_classes, img_dim, generated_files_path
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint
 
 class Model:
-    def __init__(self, X_train, y_train, X_test, y_test, learning_rate, optimizer, train_valid_split, activation_function, epochs, batch_size, loss_function):
+    def __init__(self, X_train, y_train, X_test, y_test, learning_rate, optimizer, train_valid_split, activation_function, epochs, batch_size, loss_function, use_drop_out, file_save_name):
         self.X_train = X_train
         self.y_train = y_train
         self.X_test = X_test
@@ -23,6 +23,8 @@ class Model:
         self.epochs = epochs
         self.batch_size = batch_size
         self.loss_function = loss_function
+        self.use_drop_out = use_drop_out
+        self.file_save_name = generated_files_path+file_save_name
 
         self.optimizer_instance = self.create_optimizer_instance()
 
@@ -45,17 +47,20 @@ class Model:
                         activation=self.activation_function))
         model.add(Conv2D(32, (3, 3), activation=self.activation_function))
         model.add(MaxPooling2D(pool_size=(2, 2)))
-
+        if self.use_drop_out:
+            model.add(Dropout(0.2))
         model.add(Conv2D(64, (3, 3), padding='same',
                         activation=self.activation_function))
         model.add(Conv2D(64, (3, 3), activation=self.activation_function))
         model.add(MaxPooling2D(pool_size=(2, 2)))
-
+        if self.use_drop_out:
+            model.add(Dropout(0.2))
         model.add(Conv2D(128, (3, 3), padding='same',
                         activation=self.activation_function))
         model.add(Conv2D(128, (3, 3), activation=self.activation_function))
         model.add(MaxPooling2D(pool_size=(2, 2)))
-
+        if self.use_drop_out:
+            model.add(Dropout(0.2))
         model.add(Flatten())
         model.add(Dense(512, activation=self.activation_function))
         model.add(Dense(number_of_classes, activation='softmax'))
@@ -71,10 +76,11 @@ class Model:
                                  batch_size=self.batch_size,
                                  epochs=self.epochs,
                                  validation_split=self.train_valid_split,
-                                 callbacks=[ModelCheckpoint('basic_model.h5', save_best_only=True)])
+                                 callbacks=[ModelCheckpoint(self.file_save_name+'_model.h5', save_best_only=True)])
 
         self.evaluate_on_test_data()
         self.plot_accuracy_and_loss(history)
+        return history
 
     def evaluate_on_test_data(self):
         scores = self.model.evaluate(self.X_test, self.y_test)
@@ -87,11 +93,11 @@ class Model:
         plt.ylabel('accuracy')
         plt.xlabel('epoch')
         plt.legend(['train', 'validation'], loc='upper left')
-        plt.show()
+        plt.savefig(self.file_save_name+'_accuracy.png')
         plt.plot(history.history['loss'])
         plt.plot(history.history['val_loss'])
         plt.title('model loss')
         plt.ylabel('loss')
         plt.xlabel('epoch')
         plt.legend(['train', 'validation'], loc='upper left')
-        plt.show()
+        plt.savefig(self.file_save_name+'_loss.png')
