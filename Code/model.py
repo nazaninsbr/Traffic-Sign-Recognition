@@ -7,6 +7,7 @@ from keras import backend as K
 from constants import number_of_classes, img_dim
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+from keras.callbacks import ModelCheckpoint
 
 class Model:
     def __init__(self, X_train, y_train, X_test, y_test, learning_rate, optimizer, train_valid_split, activation_function, epochs, batch_size, loss_function):
@@ -39,7 +40,6 @@ class Model:
 
     def create_cnn_model(self):
         model = Sequential()
-
         model.add(Conv2D(32, (3, 3), padding='same',
                         input_shape=(img_dim, img_dim, 3),
                         activation=self.activation_function))
@@ -59,18 +59,19 @@ class Model:
         model.add(Flatten())
         model.add(Dense(512, activation=self.activation_function))
         model.add(Dense(number_of_classes, activation='softmax'))
+        print(model.summary())
         return model
 
-    def train(self):        
-        X_t, X_val, y_t, y_val = train_test_split(self.X_train, self.y_train, test_size=self.train_valid_split, random_state=42)
+    def train(self):
         self.model.compile(loss=self.loss_function,
-                    optimizer=self.optimizer_instance,
-                    metrics=['accuracy'])
-        history = self.model.fit(X_t, y_t,
-            batch_size=self.batch_size,
-            epochs=self.epochs,
-            validation_data=(X_val, y_val)
-            )
+                            optimizer=self.optimizer_instance,
+                            metrics=['accuracy'])
+        
+        history = self.model.fit(self.X_train, self.y_train,
+                                 batch_size=self.batch_size,
+                                 epochs=self.epochs,
+                                 validation_split=self.train_valid_split,
+                                 callbacks=[ModelCheckpoint('basic_model.h5', save_best_only=True)])
 
         self.evaluate_on_test_data()
         self.plot_accuracy_and_loss(history)
