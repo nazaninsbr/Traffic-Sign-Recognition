@@ -8,7 +8,7 @@ def read_data():
     return X_train, y_train, X_test, y_test
 
 def train_model(X_train, y_train, X_test, y_test):
-    this_model = Model(X_train, y_train, X_test, y_test, learning_rate=0.1, optimizer='SGD', train_valid_split=0.2, activation_function='relu', epochs=2, batch_size=32, loss_function='categorical_crossentropy')
+    this_model = Model(X_train, y_train, X_test, y_test, learning_rate=0.1, optimizer='SGD', train_valid_split=0.2, activation_function='relu', epochs=20, batch_size=32, loss_function='categorical_crossentropy')
     this_model.train()
 
 def main():
