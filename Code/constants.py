@@ -1,8 +1,8 @@
 data_folder_path = '../gtsrb-german-traffic-sign/'
 
 meta_csv_file_name = 'Meta.csv'
-train_csv_file_name = 'Test.csv'
-test_csv_file_name = 'Train.csv'
+train_csv_file_name = 'Train.csv'
+test_csv_file_name = 'Test.csv'
 
 img_dim = 30
 number_of_classes = 43

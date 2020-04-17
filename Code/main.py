@@ -91,10 +91,22 @@ def train_model(X_train, y_train, X_test, y_test):
     test_different_optimizers(X_train, y_train, X_test, y_test)
     test_having_dropout(X_train, y_train, X_test, y_test)
 
+def load_model_and_get_accuracy(X_train, y_train, X_test, y_test):
+    print('> Basic model')
+    learning_rate = 0.01
+    optimizer = 'SGD'
+    epochs = 10
+    batch_size = 32
+    file_save_name = 'basic_model_lr_{}_optimizer_{}_epochs_{}_batch_{}'.format(learning_rate, optimizer, epochs, batch_size)
+    this_model = Model(X_train, y_train, X_test, y_test, learning_rate=learning_rate, optimizer=optimizer, train_valid_split=0.2, activation_function='relu', epochs=epochs, batch_size=batch_size, loss_function='categorical_crossentropy', use_drop_out=False, file_save_name=file_save_name)
+    this_model.load_trained_model()
+
 def main():
     print('Read and Resize Data')
     X_train, y_train, X_test, y_test = read_data()
     print('Create and Train Model')
     train_model(X_train, y_train, X_test, y_test)
+    print('Loading Trained Models')
+    load_model_and_get_accuracy(X_train, y_train, X_test, y_test)
 
 main()

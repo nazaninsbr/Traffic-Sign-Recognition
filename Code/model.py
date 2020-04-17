@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint
 from sklearn.metrics import confusion_matrix
 import numpy as np
+from keras.models import load_model
 
 class Model:
     def __init__(self, X_train, y_train, X_test, y_test, learning_rate, optimizer, train_valid_split, activation_function, epochs, batch_size, loss_function, use_drop_out, file_save_name):
@@ -66,7 +67,7 @@ class Model:
         model.add(Flatten())
         model.add(Dense(512, activation=self.activation_function))
         model.add(Dense(number_of_classes, activation='softmax'))
-        print(model.summary())
+        # print(model.summary())
         return model
 
     def train(self):
@@ -84,6 +85,10 @@ class Model:
         self.print_confusion_matrix()
         self.plot_accuracy_and_loss(history)
         return history
+
+    def load_trained_model(self):
+        self.model = load_model(self.file_save_name+'_model.h5')
+        self.evaluate_on_test_data()
 
     def print_confusion_matrix(self):
         y_pred = self.model.predict(self.X_test)
