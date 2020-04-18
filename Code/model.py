@@ -1,5 +1,6 @@
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation, Flatten
+from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D
 from keras import optimizers
@@ -16,7 +17,7 @@ class Model:
     def __init__(self, X_train, y_train, X_test, y_test, learning_rate,
                 optimizer, train_valid_split, activation_function, epochs,
                 batch_size, loss_function, use_drop_out, file_save_name,
-                drop_outs_value = None):
+                drop_outs_value=None, batch_normalization=False):
         self.X_train = X_train
         self.y_train = y_train
         self.X_test = X_test
@@ -32,6 +33,8 @@ class Model:
         self.use_drop_out = use_drop_out
         self.drop_outs_value = drop_outs_value or default_params.drop_outs_value
         self.file_save_name = generated_files_path+file_save_name
+
+        self.batch_normalization = batch_normalization
 
         self.optimizer_instance = self.create_optimizer_instance()
 
@@ -54,18 +57,24 @@ class Model:
                         activation=self.activation_function))
         model.add(Conv2D(32, (3, 3), activation=self.activation_function))
         model.add(MaxPooling2D(pool_size=(2, 2)))
+        if self.batch_normalization:
+            model.add(BatchNormalization())
         if self.use_drop_out:
             model.add(Dropout(self.drop_outs_value[0]))
         model.add(Conv2D(64, (3, 3), padding='same',
                         activation=self.activation_function))
         model.add(Conv2D(64, (3, 3), activation=self.activation_function))
         model.add(MaxPooling2D(pool_size=(2, 2)))
+        if self.batch_normalization:
+            model.add(BatchNormalization())
         if self.use_drop_out:
             model.add(Dropout(self.drop_outs_value[1]))
         model.add(Conv2D(128, (3, 3), padding='same',
                         activation=self.activation_function))
         model.add(Conv2D(128, (3, 3), activation=self.activation_function))
         model.add(MaxPooling2D(pool_size=(2, 2)))
+        if self.batch_normalization:
+            model.add(BatchNormalization())
         if self.use_drop_out:
             model.add(Dropout(self.drop_outs_value[2]))
         model.add(Flatten())
