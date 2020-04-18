@@ -13,7 +13,9 @@ import numpy as np
 from keras.models import load_model
 
 class Model:
-    def __init__(self, X_train, y_train, X_test, y_test, learning_rate, optimizer, train_valid_split, activation_function, epochs, batch_size, loss_function, use_drop_out, file_save_name):
+    def __init__(self, X_train, y_train, X_test, y_test, learning_rate,
+                optimizer, train_valid_split, activation_function, epochs,
+                batch_size, loss_function, use_drop_out, file_save_name):
         self.X_train = X_train
         self.y_train = y_train
         self.X_test = X_test
@@ -71,14 +73,16 @@ class Model:
         return model
 
     def train(self):
+        X_train, X_val, Y_train, Y_val = train_test_split(self.X_train, self.y_train,
+                            test_size=self.train_valid_split, random_state=42)
         self.model.compile(loss=self.loss_function,
                             optimizer=self.optimizer_instance,
                             metrics=['accuracy'])
-        
-        history = self.model.fit(self.X_train, self.y_train,
+
+        history = self.model.fit(X_train, Y_train,
                                  batch_size=self.batch_size,
                                  epochs=self.epochs,
-                                 validation_split=self.train_valid_split,
+                                 validation_data=(X_val, Y_val),
                                  callbacks=[ModelCheckpoint(self.file_save_name+'_model.h5', save_best_only=True)])
 
         self.evaluate_on_test_data()
