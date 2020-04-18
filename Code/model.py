@@ -4,7 +4,7 @@ from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D
 from keras import optimizers
 from keras import backend as K
-from constants import number_of_classes, img_dim, generated_files_path
+from constants import number_of_classes, img_dim, generated_files_path, default_params
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 from keras.callbacks import ModelCheckpoint
@@ -15,7 +15,8 @@ from keras.models import load_model
 class Model:
     def __init__(self, X_train, y_train, X_test, y_test, learning_rate,
                 optimizer, train_valid_split, activation_function, epochs,
-                batch_size, loss_function, use_drop_out, file_save_name):
+                batch_size, loss_function, use_drop_out, file_save_name,
+                drop_outs_value = None):
         self.X_train = X_train
         self.y_train = y_train
         self.X_test = X_test
@@ -29,6 +30,7 @@ class Model:
         self.batch_size = batch_size
         self.loss_function = loss_function
         self.use_drop_out = use_drop_out
+        self.drop_outs_value = drop_outs_value or default_params.drop_outs_value
         self.file_save_name = generated_files_path+file_save_name
 
         self.optimizer_instance = self.create_optimizer_instance()
@@ -53,19 +55,19 @@ class Model:
         model.add(Conv2D(32, (3, 3), activation=self.activation_function))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         if self.use_drop_out:
-            model.add(Dropout(0.2))
+            model.add(Dropout(self.drop_outs_value[0]))
         model.add(Conv2D(64, (3, 3), padding='same',
                         activation=self.activation_function))
         model.add(Conv2D(64, (3, 3), activation=self.activation_function))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         if self.use_drop_out:
-            model.add(Dropout(0.2))
+            model.add(Dropout(self.drop_outs_value[1]))
         model.add(Conv2D(128, (3, 3), padding='same',
                         activation=self.activation_function))
         model.add(Conv2D(128, (3, 3), activation=self.activation_function))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         if self.use_drop_out:
-            model.add(Dropout(0.2))
+            model.add(Dropout(self.drop_outs_value[2]))
         model.add(Flatten())
         model.add(Dense(512, activation=self.activation_function))
         model.add(Dense(number_of_classes, activation='softmax'))

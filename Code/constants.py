@@ -18,3 +18,4 @@ default_params.optimizer = "SGD"
 default_params.activation_function = "relu"
 default_params.train_valid_split = 0.2
 default_params.loss_function = "categorical_crossentropy"
+default_params.drop_outs_value = [0.2, 0.3, 0.4]

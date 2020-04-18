@@ -99,9 +99,9 @@ def test_having_dropout(X_train, y_train, X_test, y_test):
         file_save_name = 'acc_of_train_having_and_not_having_dropout_{}_epochs.png'.format(epochs))
 
 def train_model(X_train, y_train, X_test, y_test):
-    create_and_test_basic_model(X_train, y_train, X_test, y_test)
-    test_different_activation_functions(X_train, y_train, X_test, y_test)
-    test_different_optimizers(X_train, y_train, X_test, y_test)
+    # create_and_test_basic_model(X_train, y_train, X_test, y_test)
+    # test_different_activation_functions(X_train, y_train, X_test, y_test)
+    # test_different_optimizers(X_train, y_train, X_test, y_test)
     test_having_dropout(X_train, y_train, X_test, y_test)
 
 def load_model_and_get_accuracy(X_train, y_train, X_test, y_test):
