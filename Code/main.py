@@ -102,7 +102,7 @@ def test_having_batch_normalization(X_train, y_train, X_test, y_test):
     print('> Testing batch normalization')
     learning_rate = default_params.learning_rate
     activation_function = default_params.activation_function
-    epochs = 2
+    epochs = 17
     batch_size = default_params.batch_size
     optimizer = default_params.optimizer
     history_of_models = {}
@@ -129,13 +129,45 @@ def test_having_batch_normalization(X_train, y_train, X_test, y_test):
         x_label = 'epoch',
         file_save_name = 'acc_of_train_having_and_not_having_batch_normalization_{}_epochs.png'.format(epochs))
 
+def test_having_data_augmentation(X_train, y_train, X_test, y_test):
+    print('> Testing data augmentation')
+    learning_rate = default_params.learning_rate
+    activation_function = default_params.activation_function
+    epochs = 100
+    batch_size = default_params.batch_size
+    optimizer = default_params.optimizer
+    history_of_models = {}
+    for use_data_augmentation in [True, False]:
+        file_save_name = 'testing_data_augmentation_{}_epochs_{}'.format(str(use_data_augmentation), epochs)
+        this_model = Model(X_train, y_train, X_test, y_test, learning_rate=learning_rate, optimizer=optimizer,
+                            train_valid_split=default_params.train_valid_split, activation_function=activation_function,
+                            epochs=epochs, batch_size=batch_size, loss_function=default_params.loss_function,
+                            use_drop_out=False, file_save_name=file_save_name, data_augmentation=use_data_augmentation)
+        hist = this_model.train()
+        history_of_models['data_augmentation = '+str(use_data_augmentation)] = hist
+
+    draw_multiple_line_plots(history_of_models,
+        field_to_draw='val_acc',
+        title = 'accuracy on validation data',
+        y_label = 'accuracy',
+        x_label = 'epoch',
+        file_save_name = 'acc_of_validation_having_and_not_having_data_augmentation_{}_epochs.png'.format(epochs))
+
+    draw_multiple_line_plots(history_of_models,
+        field_to_draw='acc',
+        title = 'accuracy on train data',
+        y_label = 'accuracy',
+        x_label = 'epoch',
+        file_save_name = 'acc_of_train_having_and_not_having_data_augmentation_{}_epochs.png'.format(epochs))
+
 
 def train_model(X_train, y_train, X_test, y_test):
     # create_and_test_basic_model(X_train, y_train, X_test, y_test)
     # test_different_activation_functions(X_train, y_train, X_test, y_test)
     # test_different_optimizers(X_train, y_train, X_test, y_test)
     # test_having_dropout(X_train, y_train, X_test, y_test)
-    test_having_batch_normalization(X_train, y_train, X_test, y_test)
+    # test_having_batch_normalization(X_train, y_train, X_test, y_test)
+    test_having_data_augmentation(X_train, y_train, X_test, y_test)
 
 def load_model_and_get_accuracy(X_train, y_train, X_test, y_test):
     print('> Basic model')
@@ -156,7 +188,7 @@ def main():
     X_train, y_train, X_test, y_test = read_data()
     print('Create and Train Model')
     train_model(X_train, y_train, X_test, y_test)
-    print('Loading Trained Models')
-    load_model_and_get_accuracy(X_train, y_train, X_test, y_test)
+    # print('Loading Trained Models')
+    # load_model_and_get_accuracy(X_train, y_train, X_test, y_test)
 
 main()

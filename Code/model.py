@@ -3,6 +3,7 @@ from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D
+from keras.preprocessing.image import ImageDataGenerator
 from keras import optimizers
 from keras import backend as K
 from constants import number_of_classes, img_dim, generated_files_path, default_params
@@ -17,7 +18,7 @@ class Model:
     def __init__(self, X_train, y_train, X_test, y_test, learning_rate,
                 optimizer, train_valid_split, activation_function, epochs,
                 batch_size, loss_function, use_drop_out, file_save_name,
-                drop_outs_value=None, batch_normalization=False):
+                drop_outs_value=None, batch_normalization=False, data_augmentation=False):
         self.X_train = X_train
         self.y_train = y_train
         self.X_test = X_test
@@ -35,6 +36,7 @@ class Model:
         self.file_save_name = generated_files_path+file_save_name
 
         self.batch_normalization = batch_normalization
+        self.data_augmentation = data_augmentation
 
         self.optimizer_instance = self.create_optimizer_instance()
 
@@ -89,17 +91,43 @@ class Model:
         self.model.compile(loss=self.loss_function,
                             optimizer=self.optimizer_instance,
                             metrics=['accuracy'])
-
-        history = self.model.fit(X_train, Y_train,
-                                 batch_size=self.batch_size,
-                                 epochs=self.epochs,
-                                 validation_data=(X_val, Y_val),
-                                 callbacks=[ModelCheckpoint(self.file_save_name+'_model.h5', save_best_only=True)])
+        if self.data_augmentation:
+            aug = ImageDataGenerator(
+            	rotation_range=10,
+            	zoom_range=0.15,
+            	width_shift_range=0.1,
+            	height_shift_range=0.1,
+            	shear_range=0.15,
+            	horizontal_flip=False,
+            	vertical_flip=False,
+            	fill_mode="nearest")
+            history = self.fit_model_with_data_augmentation(aug, X_train, Y_train, X_val, Y_val)
+        else:
+            history = self.fit_model_without_data_augmentation(X_train, Y_train, X_val, Y_val)
 
         self.evaluate_on_test_data()
         self.print_confusion_matrix()
         self.plot_accuracy_and_loss(history)
         return history
+
+    def fit_model_with_data_augmentation(self, aug, X_train, Y_train, X_val, Y_val):
+        return self.model.fit_generator(aug.flow(X_train, Y_train, batch_size=self.batch_size),
+                                        steps_per_epoch=X_train.shape[0] / self.batch_size,
+                                        epochs=self.epochs,
+                                        validation_data=aug.flow(X_val, Y_val),
+                                        callbacks=[ModelCheckpoint(
+                                            self.file_save_name+'_model.h5',
+                                            save_best_only=True)])
+
+    def fit_model_without_data_augmentation(self, X_train, Y_train, X_val, Y_val):
+        return self.model.fit(X_train, Y_train,
+                             batch_size=self.batch_size,
+                             epochs=self.epochs,
+                             validation_data=(X_val, Y_val),
+                             callbacks=[ModelCheckpoint(
+                                self.file_save_name+'_model.h5',
+                                save_best_only=True)])
+
 
     def load_trained_model(self):
         self.model = load_model(self.file_save_name+'_model.h5')
