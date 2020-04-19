@@ -131,17 +131,17 @@ def test_having_batch_normalization(X_train, y_train, X_test, y_test):
 
 
 def train_model(X_train, y_train, X_test, y_test):
-    # create_and_test_basic_model(X_train, y_train, X_test, y_test)
-    # test_different_activation_functions(X_train, y_train, X_test, y_test)
-    # test_different_optimizers(X_train, y_train, X_test, y_test)
-    # test_having_dropout(X_train, y_train, X_test, y_test)
+    create_and_test_basic_model(X_train, y_train, X_test, y_test)
+    test_different_activation_functions(X_train, y_train, X_test, y_test)
+    test_different_optimizers(X_train, y_train, X_test, y_test)
+    test_having_dropout(X_train, y_train, X_test, y_test)
     test_having_batch_normalization(X_train, y_train, X_test, y_test)
 
 def load_model_and_get_accuracy(X_train, y_train, X_test, y_test):
     print('> Basic model')
     learning_rate = default_params.learning_rate
     activation_function = default_params.activation_function
-    epochs = 10
+    epochs = 20
     batch_size = default_params.batch_size
     optimizer = default_params.optimizer
     file_save_name = 'basic_model_lr_{}_optimizer_{}_epochs_{}_batch_{}'.format(learning_rate, optimizer, epochs, batch_size)
