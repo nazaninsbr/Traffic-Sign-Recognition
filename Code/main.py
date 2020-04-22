@@ -1,7 +1,8 @@
 from data_reader import read_image_files
-from constants import data_folder_path, train_csv_file_name, test_csv_file_name, default_params
+from constants import data_folder_path, train_csv_file_name, test_csv_file_name, default_params, generated_files_path
 from model import Model
 from visualizer import draw_multiple_line_plots
+import os 
 
 def read_data():
     X_train, y_train = read_image_files(csv_file_name=data_folder_path+train_csv_file_name)
@@ -170,25 +171,27 @@ def train_model(X_train, y_train, X_test, y_test):
     test_having_data_augmentation(X_train, y_train, X_test, y_test)
 
 def load_model_and_get_accuracy(X_train, y_train, X_test, y_test):
-    print('> Basic model')
-    learning_rate = default_params.learning_rate
-    activation_function = default_params.activation_function
-    epochs = 20
-    batch_size = default_params.batch_size
-    optimizer = default_params.optimizer
-    file_save_name = 'basic_model_lr_{}_optimizer_{}_epochs_{}_batch_{}'.format(learning_rate, optimizer, epochs, batch_size)
-    this_model = Model(X_train, y_train, X_test, y_test, learning_rate=learning_rate, optimizer=optimizer,
-                    train_valid_split=default_params.train_valid_split, activation_function=activation_function,
-                    epochs=epochs, batch_size=batch_size, loss_function=default_params.loss_function,
-                    use_drop_out=False, file_save_name=file_save_name)
-    this_model.load_trained_model()
+    all_model_files = [x.replace('_model.h5', '') for x in os.listdir(generated_files_path) if x.endswith('_model.h5')]
+    for m_file in all_model_files:
+        print(m_file)
+        learning_rate = default_params.learning_rate
+        activation_function = default_params.activation_function
+        epochs = 20
+        batch_size = default_params.batch_size
+        optimizer = default_params.optimizer
+        file_save_name = m_file
+        this_model = Model(X_train, y_train, X_test, y_test, learning_rate=learning_rate, optimizer=optimizer,
+                        train_valid_split=default_params.train_valid_split, activation_function=activation_function,
+                        epochs=epochs, batch_size=batch_size, loss_function=default_params.loss_function,
+                        use_drop_out=False, file_save_name=file_save_name)
+        this_model.load_trained_model()
 
 def main():
     print('Read and Resize Data')
     X_train, y_train, X_test, y_test = read_data()
     print('Create and Train Model')
     train_model(X_train, y_train, X_test, y_test)
-    # print('Loading Trained Models')
-    # load_model_and_get_accuracy(X_train, y_train, X_test, y_test)
+    print('Loading Trained Models')
+    load_model_and_get_accuracy(X_train, y_train, X_test, y_test)
 
 main()
