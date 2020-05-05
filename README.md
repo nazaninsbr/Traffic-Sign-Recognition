@@ -1,5 +1,3 @@
-# Todos
+## Sign Recognition 
 
-- [x] Read data 
-- [x] perform preprocessing on the data
-- [x] implement basic model
+We are using CNNs to recognize traffic signs in the `gtsrb-german-traffic-sign` dataset. 
